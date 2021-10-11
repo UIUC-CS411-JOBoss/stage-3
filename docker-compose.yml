@@ -1,0 +1,29 @@
+version: "3.9"
+    
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: jobossjoboss
+      MYSQL_DATABASE: joboss
+      MYSQL_USER: joboss
+      MYSQL_PASSWORD: joboss
+    volumes:
+      - "./sql/init.sql:/docker-entrypoint-initdb.d/1.sql"
+  scripts:
+    depends_on:
+      - db
+    build: .
+    volumes:
+      - scripts:/scripts
+    environment:
+      DB_HOST: db
+      DB_USER: joboss
+      DB_PASSWORD: joboss
+      DB_NAME: joboss
+volumes:
+  db_data: {}
+  scripts: {}
