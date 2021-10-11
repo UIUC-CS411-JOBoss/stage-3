@@ -5,6 +5,7 @@ import os
 from tenacity import retry, wait_fixed
 import random
 from datetime import datetime, timedelta
+from time import time
 
 BASE_DATE = datetime(2021, 8, 1)
 
@@ -114,21 +115,35 @@ with connection:
 
     # QUERY 1
     with connection.cursor() as cursor:
+        t = time()
         cursor.execute(query1)
         result = cursor.fetchall()
-        print('QUERY 1', query1, result)
+        print("==========QUERY 1============",)
+        print('QUERY 1', time()-t, query1)
+        print('#'*50)
+        print(result)
+        print('#'*50)
         cursor.execute(explain_1)
         result = cursor.fetchall()
-        print('EXPLAIN QUERY 1', explain_1, result)
+        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
+        print(result)
+        print("==========END QUERY 1============")
     
     # QUERY 2
     with connection.cursor() as cursor:
+        t = time()
         cursor.execute(query2)
         result = cursor.fetchall()
-        print('QUERY 2', result)
+        print("==========QUERY 2============")
+        print('QUERY 2', time()-t, query2)
+        print('#'*50)
+        print(result)
+        print('#'*50)
         cursor.execute(explain_2)
         result = cursor.fetchall()
-        print('EXPLAIN QUERY 2', explain_2, result)
+        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
+        print(result)
+        print("==========END QUERY 1============")
       
     # ADD INDEX
     # with connection.cursor() as cursor:
@@ -137,19 +152,32 @@ with connection:
 
     # QUERY 1
     with connection.cursor() as cursor:
+        t = time()
         cursor.execute(query1)
         result = cursor.fetchall()
-        print('QUERY 1', query1, result)
+        print("==========QUERY 1============",)
+        print('QUERY 1', time()-t, query1)
+        print('#'*50)
+        print(result)
+        print('#'*50)
         cursor.execute(explain_1)
         result = cursor.fetchall()
-        print('EXPLAIN QUERY 1', explain_1, result)
+        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
+        print(result)
+        print("==========END QUERY 1============")
     
     # QUERY 2
     with connection.cursor() as cursor:
+        t = time()
         cursor.execute(query2)
         result = cursor.fetchall()
-        print('QUERY 2', result)
+        print("==========QUERY 2============")
+        print('QUERY 2', time()-t, query2)
+        print('#'*50)
+        print(result)
+        print('#'*50)
         cursor.execute(explain_2)
         result = cursor.fetchall()
-        print('EXPLAIN QUERY 2', explain_2, result)
-  
+        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
+        print(result)
+        print("==========END QUERY 1============")
