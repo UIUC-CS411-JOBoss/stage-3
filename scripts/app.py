@@ -108,16 +108,16 @@ with connection:
         result = cursor.fetchone()
         print('JOB_STATUS COUNT', result)
     
-    query1 = "SELECT company.id, company.name, COUNT(*) AS num_of_offer \
+    query1 = "SELECT SQL_NO_CACHE company.id, company.name, COUNT(*) AS num_of_offer \
                 FROM JOB_STATUS AS status JOIN JOB AS job ON status.job_id = job.id JOIN COMPANY AS company ON job.company_id = company.id \
                 WHERE status.create_at LIKE '2021%' AND status.application_status = 'offered' \
                 GROUP BY company.id, company.name \
-                ORDER BY num_of_offer ASC;"
-    query2 = "SELECT c.name as company_name, j.title as job_title, COUNT(*) as apply_count \
-                FROM COMPANY c JOIN JOB j ON c.id = j.company_id JOIN JOB_STATUS js ON j.id = js.job_id \
-                WHERE js.application_status = 'applied' AND js.create_at between (CURDATE() - INTERVAL 5 DAY ) and CURDATE() \
-                GROUP BY j.id \
-                LIMIT 1;"
+                ORDER BY num_of_offer DESC;"
+    query2 = "SELECT SQL_NO_CACHE u.id \
+                FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id \
+                WHERE date(js.create_at) = CURDATE() - interval 7 day \
+                GROUP BY u.id \
+                HAVING COUNT(*) < 5;"
     explain_1 = "EXPLAIN " + query1
     explain_2 = "EXPLAIN " + query2
 
@@ -152,9 +152,9 @@ with connection:
         print("==========END QUERY 1============")
       
     # ADD INDEX
-    # with connection.cursor() as cursor:
-    #     sql = ""
-    #     cursor.execute(sql)
+    with connection.cursor() as cursor:
+        sql = "CREATE INDEX application_status_index ON JOB_STATUS (application_status, create_at);"
+        cursor.execute(sql)
 
     # QUERY 1
     with connection.cursor() as cursor:
