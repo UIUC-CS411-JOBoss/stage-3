@@ -4,7 +4,9 @@ import pymysql.cursors
 import os
 from tenacity import retry, wait_fixed
 import random
+from datetime import datetime, timedelta
 
+BASE_DATE = datetime(2021, 8, 1)
 
 DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
@@ -32,22 +34,24 @@ job_list = [
   (5, "https://careers.google.com/jobs/results/122335392432038598-software-engineering-intern-masters-summer-2022/?employment_type=INTERN", "", True, "", "internship", "Software Engineering Intern, Master's, Summer 2022", "", "yes", "yes"),
 ]
 
-status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
+# status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
 status_1 = ['applied']
 status_2 = ['applied', 'OA', 'behavior interview', 'technical interview']
 status_3 = ['rejected']
 status_4 = ['offered']
 status_5 = ['applied', 'OA', 'behavior interview', 'technical interview', 'offered']
+status_list = [status_1, status_2, status_3, status_4, status_5]
 
 job_ids = list(range(1, 6))
 
 def random_apply(user_id):
   job_status_list = []
-  job_applied = random.sample(job_ids, random.randrange(1, 5))
-  # job_id` 
-  # `user_id`
-  # `create_at`
-  # `application_status
+  for job_id in random.sample(job_ids, random.randrange(1, 5)):
+    d = BASE_DATE + timedelta(days=random.randint(1, 30))
+    for status in random.choice(status_list):
+      d = d + timedelta(days=random.randint(1, 15))
+      job_status_list.append((job_id, user_id, d, status))
+  return job_status_list
 
 @retry(wait=wait_fixed(2))
 def get_db():
@@ -87,5 +91,16 @@ with connection:
         cursor.execute(query)
         result = cursor.fetchone()
         print('JOB COUNT', result)
-    for i in range(USER_CNT):
-      random_apply(i)
+    job_apply_list = []
+    for i in range(1, USER_CNT):
+      job_apply_list += random_apply(i)
+    
+    with connection.cursor() as cursor:
+        query = "INSERT INTO `JOB_STATUS` (`job_id`, `user_id`, `create_at`, `application_status`) VALUES (%s, %s, %s, %s)"
+        cursor.executemany(query, job_apply_list)
+    connection.commit()
+    with connection.cursor() as cursor:
+        query = "SELECT COUNT(1) FROM JOB_STATUS;"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        print('JOB_STATUS COUNT', result)
