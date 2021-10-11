@@ -108,8 +108,16 @@ with connection:
         result = cursor.fetchone()
         print('JOB_STATUS COUNT', result)
     
-    query1 = "SELECT application_status, COUNT(1) FROM JOB_STATUS GROUP BY application_status;"
-    query2 = "SELECT COUNT(1) FROM JOB_STATUS;"
+    query1 = "SELECT company.id, company.name, COUNT(*) AS num_of_offer \
+                FROM JOB_STATUS AS status JOIN JOB AS job ON status.job_id = job.id JOIN COMPANY AS company ON job.company_id = company.id \
+                WHERE status.create_at LIKE '2021%' AND status.application_status = 'offered' \
+                GROUP BY company.id, company.name \
+                ORDER BY num_of_offer ASC;"
+    query2 = "SELECT c.name as company_name, j.title as job_title, COUNT(*) as apply_count \
+                FROM COMPANY c JOIN JOB j ON c.id = j.company_id JOIN JOB_STATUS js ON j.id = js.job_id \
+                WHERE js.application_status = 'applied' AND js.create_at between (CURDATE() - INTERVAL 5 DAY ) and CURDATE() \
+                GROUP BY j.id \
+                LIMIT 1;"
     explain_1 = "EXPLAIN " + query1
     explain_2 = "EXPLAIN " + query2
 
