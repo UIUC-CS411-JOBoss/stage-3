@@ -40,7 +40,8 @@ status_2 = ['applied', 'OA', 'behavior interview', 'technical interview']
 status_3 = ['rejected']
 status_4 = ['offered']
 status_5 = ['applied', 'OA', 'behavior interview', 'technical interview', 'offered']
-status_list = [status_1, status_2, status_3, status_4, status_5]
+status_6 = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected']
+status_list = [status_1, status_2, status_4, status_5] + [status_3]*1000 + [status_6]*500
 
 job_ids = list(range(1, 6))
 
