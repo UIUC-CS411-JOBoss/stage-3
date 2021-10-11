@@ -104,3 +104,50 @@ with connection:
         cursor.execute(query)
         result = cursor.fetchone()
         print('JOB_STATUS COUNT', result)
+    
+    query1 = "SELECT COUNT(1) FROM JOB_STATUS;"
+    query2 = "SELECT COUNT(1) FROM JOB_STATUS;"
+    explain_1 = "EXPLAIN ANALYZE " + query1
+    explain_2 = "EXPLAIN ANALYZE" + query2
+
+    # QUERY 1
+    with connection.cursor() as cursor:
+        cursor.execute(query1)
+        result = cursor.fetchall()
+        print('QUERY 1', query1, result)
+        cursor.execute(explain_1)
+        result = cursor.fetchall()
+        print('EXPLAIN QUERY 1', explain_1, result)
+    
+    # QUERY 2
+    with connection.cursor() as cursor:
+        cursor.execute(query2)
+        result = cursor.fetchall()
+        print('QUERY 2', result)
+        cursor.execute(explain_2)
+        result = cursor.fetchall()
+        print('EXPLAIN QUERY 2', explain_2, result)
+      
+    # ADD INDEX
+    # with connection.cursor() as cursor:
+    #     sql = ""
+    #     cursor.execute(sql)
+
+    # QUERY 1
+    with connection.cursor() as cursor:
+        cursor.execute(query1)
+        result = cursor.fetchall()
+        print('QUERY 1', query1, result)
+        cursor.execute(explain_1)
+        result = cursor.fetchall()
+        print('EXPLAIN QUERY 1', explain_1, result)
+    
+    # QUERY 2
+    with connection.cursor() as cursor:
+        cursor.execute(query2)
+        result = cursor.fetchall()
+        print('QUERY 2', result)
+        cursor.execute(explain_2)
+        result = cursor.fetchall()
+        print('EXPLAIN QUERY 2', explain_2, result)
+  
