@@ -56,6 +56,7 @@ def random_apply(user_id):
 
 @retry(wait=wait_fixed(2))
 def get_db():
+  print("get db")
   return pymysql.connect(host=DB_HOST,
                         user=DB_USER,
                         password=DB_PASSWORD,
@@ -106,10 +107,10 @@ with connection:
         result = cursor.fetchone()
         print('JOB_STATUS COUNT', result)
     
-    query1 = "SELECT COUNT(1) FROM JOB_STATUS;"
+    query1 = "SELECT application_status, COUNT(1) FROM JOB_STATUS GROUP BY application_status;"
     query2 = "SELECT COUNT(1) FROM JOB_STATUS;"
-    explain_1 = "EXPLAIN ANALYZE " + query1
-    explain_2 = "EXPLAIN ANALYZE" + query2
+    explain_1 = "EXPLAIN " + query1
+    explain_2 = "EXPLAIN " + query2
 
     # QUERY 1
     with connection.cursor() as cursor:
