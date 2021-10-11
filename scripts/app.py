@@ -23,7 +23,9 @@ company_list = [
   ('Apple', 'https://www.apple.com/careers/us/'),
   ('Netflix', 'https://jobs.netflix.com/jobs/'),
   ('Microsoft', 'https://careers.microsoft.com/us/en'),
-  ('Google', 'https://careers.google.com/')
+  ('Google', 'https://careers.google.com/'),
+  ('Gusto', 'https://gusto.com/about/careers'),
+  ('Hudson River Trading', 'https://www.hudsonrivertrading.com/')
 ]
 
 job_list = [
@@ -33,6 +35,8 @@ job_list = [
   (3, "https://jobs.netflix.com/jobs/119544498", "", True, "", "internship", "Machine Learning Intern", "", "yes", "yes"),
   (4, "https://careers.microsoft.com/students/us/en/job/1085294/Software-Engineering-Intern-Opportunities", "", True, "", "internship", "Software Engineering: Intern Opportunities", "", "yes", "yes"),
   (5, "https://careers.google.com/jobs/results/122335392432038598-software-engineering-intern-masters-summer-2022/?employment_type=INTERN", "", True, "", "internship", "Software Engineering Intern, Master's, Summer 2022", "", "yes", "yes"),
+  (6, 'https://boards.greenhouse.io/gusto/jobs/3499036', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),
+  (7, 'https://www.hudsonrivertrading.com/careers/job/?gh_jid=3015374', "", True, "", "internship", "Software Engineering Internship - Summer 2022", "", "yes", "yes"),
 ]
 
 # status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
@@ -44,11 +48,11 @@ status_5 = ['applied', 'OA', 'behavior interview', 'technical interview', 'offer
 status_6 = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected']
 status_list = [status_1, status_2, status_4, status_5] + [status_3]*1000 + [status_6]*500
 
-job_ids = list(range(1, 6))
+job_ids = list(range(1, len(job_list)))
 
 def random_apply(user_id):
   job_status_list = []
-  for job_id in random.sample(job_ids, random.randrange(1, 5)):
+  for job_id in random.sample(job_ids, random.randrange(1, len(job_list))):
     d = BASE_DATE + timedelta(days=random.randint(1, 30))
     for status in random.choice(status_list):
       d = d + timedelta(days=random.randint(1, 15))
