@@ -130,7 +130,7 @@ with connection:
     
     query1 = "SELECT SQL_NO_CACHE company.id, company.name, COUNT(*) AS num_of_offer \
                 FROM JOB_STATUS AS status JOIN JOB AS job ON status.job_id = job.id JOIN COMPANY AS company ON job.company_id = company.id \
-                WHERE status.create_at LIKE '2021%' AND status.application_status = 'offered' \
+                WHERE status.create_at LIKE '2021%' AND status.application_status = 'offered' AND job.type = 'internship' \
                 GROUP BY company.id, company.name \
                 ORDER BY num_of_offer DESC;"
     query2 = "SELECT SQL_NO_CACHE u.id \
