@@ -25,7 +25,10 @@ company_list = [
   ('Microsoft', 'https://careers.microsoft.com/us/en'),
   ('Google', 'https://careers.google.com/'),
   ('Gusto', 'https://gusto.com/about/careers'),
-  ('Hudson River Trading', 'https://www.hudsonrivertrading.com/')
+  ('Hudson River Trading', 'https://www.hudsonrivertrading.com/'),
+  ('Flexport', 'https://boards.greenhouse.io/flexport/'),
+  ('Adobe', 'https://adobe.wd5.myworkdayjobs.com/en-US/external_university'),
+  ('Bodo.ai', 'https://jobs.lever.co/bodo/'),
 ]
 
 job_list = [
@@ -37,6 +40,9 @@ job_list = [
   (5, "https://careers.google.com/jobs/results/122335392432038598-software-engineering-intern-masters-summer-2022/?employment_type=INTERN", "", True, "", "internship", "Software Engineering Intern, Master's, Summer 2022", "", "yes", "yes"),
   (6, 'https://boards.greenhouse.io/gusto/jobs/3499036', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),
   (7, 'https://www.hudsonrivertrading.com/careers/job/?gh_jid=3015374', "", True, "", "internship", "Software Engineering Internship - Summer 2022", "", "yes", "yes"),
+  (8, 'https://boards.greenhouse.io/flexport/jobs/3470041', "", True, "", "internship", "2022 Summer Full-Stack Software Engineering Internship", "", "yes", "yes"),
+  (9, 'https://adobe.wd5.myworkdayjobs.com/en-US/external_university/details/XMLNAME-2022-Intern---Software-Development-Intern_R116000?q=intern', "", True, "", "internship", "2022 Intern - Software Development Intern", "", "yes", "yes"),
+  (10, 'https://jobs.lever.co/bodo/f95f11b7-9089-4072-a217-473ad82b6e8f', "", True, "", "internship", "Software Engineer, Cloud Infrastructure (Intern)", "", "yes", "yes"),
 ]
 
 # status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
