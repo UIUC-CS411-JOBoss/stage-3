@@ -53,6 +53,7 @@ job_list = [
   (13, 'https://www.linkedin.com/jobs/view/2719073327/', "", True, "", "internship", "Biomedical Data Scientist - Summer 2022 Internship", "", "yes", "yes"),
   (14, 'https://qumulo.com/company/jobs/?gh_jid=3434199', "", True, "", "internship", "Software Development Engineer (Internship 2022)", "", "yes", "yes"),
   (15, 'https://jobs.lever.co/cambly/a965ee9f-3a17-4c20-a17b-8b7a0e4be158', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),   
+  (15, 'https://jobs.lever.co/cambly/a965ee9f-3a17-4c20-a17b-8b7a0e4be158fake', "", True, "", "internship", "Software Engineering Intern (Winter 2022)", "", "yes", "yes"),   
 ]
 
 # status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
@@ -130,14 +131,15 @@ with connection:
     
     query1 = "SELECT SQL_NO_CACHE company.id, company.name, COUNT(*) AS num_of_offer \
                 FROM JOB_STATUS AS status JOIN JOB AS job ON status.job_id = job.id JOIN COMPANY AS company ON job.company_id = company.id \
-                WHERE status.create_at LIKE '2021%' AND status.application_status = 'offered' AND job.type = 'internship' \
+                WHERE status.create_at LIKE '202%' AND status.application_status = 'offered' AND job.type = 'internship' \
                 GROUP BY company.id, company.name \
                 ORDER BY num_of_offer DESC;"
-    query2 = "SELECT SQL_NO_CACHE u.id \
-                FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id \
-                WHERE date(js.create_at) = CURDATE() - interval 7 day \
+    query2 = "SELECT SQL_NO_CACHE u.id, u.email \
+                FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
+                WHERE (DATE(js.create_at) = CURDATE() - interval 7 day) AND j.url LIKE '%workday%' \
                 GROUP BY u.id \
-                HAVING COUNT(*) < 5;"
+                HAVING COUNT(*) < 5 \
+                ORDER BY u.email ASC LIMIT 20;"
     explain_1 = "EXPLAIN " + query1
     explain_2 = "EXPLAIN " + query2
 
@@ -169,7 +171,7 @@ with connection:
         result = cursor.fetchall()
         print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
         print(result)
-        print("==========END QUERY 1============")
+        print("==========END QUERY 2============")
       
     # ADD INDEX
     with connection.cursor() as cursor:
