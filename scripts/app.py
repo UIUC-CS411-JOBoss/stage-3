@@ -29,6 +29,11 @@ company_list = [
   ('Flexport', 'https://boards.greenhouse.io/flexport/'),
   ('Adobe', 'https://adobe.wd5.myworkdayjobs.com/en-US/external_university'),
   ('Bodo.ai', 'https://jobs.lever.co/bodo/'),
+  ('Gitlab', 'https://boards.greenhouse.io/gitlab'),
+  ('Reddit', 'https://boards.greenhouse.io/reddit'),
+  ('PathAI', 'https://www.linkedin.com/company/pathai/jobs/'),
+  ('Qumulo', 'https://qumulo.com/company/jobs/?gh_jid=3434199'),
+  ('Cambly', 'https://jobs.lever.co/cambly/')
 ]
 
 job_list = [
@@ -43,6 +48,11 @@ job_list = [
   (8, 'https://boards.greenhouse.io/flexport/jobs/3470041', "", True, "", "internship", "2022 Summer Full-Stack Software Engineering Internship", "", "yes", "yes"),
   (9, 'https://adobe.wd5.myworkdayjobs.com/en-US/external_university/details/XMLNAME-2022-Intern---Software-Development-Intern_R116000?q=intern', "", True, "", "internship", "2022 Intern - Software Development Intern", "", "yes", "yes"),
   (10, 'https://jobs.lever.co/bodo/f95f11b7-9089-4072-a217-473ad82b6e8f', "", True, "", "internship", "Software Engineer, Cloud Infrastructure (Intern)", "", "yes", "yes"),
+  (11, 'https://boards.greenhouse.io/gitlab/jobs/5197819002', "", True, "", "internship", "Engineering Internship - register your interest", "", "yes", "yes"),
+  (12, 'https://boards.greenhouse.io/reddit/jobs/3458837', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),
+  (13, 'https://www.linkedin.com/jobs/view/2719073327/', "", True, "", "internship", "Biomedical Data Scientist - Summer 2022 Internship", "", "yes", "yes"),
+  (14, 'https://qumulo.com/company/jobs/?gh_jid=3434199', "", True, "", "internship", "Software Development Engineer (Internship 2022)", "", "yes", "yes"),
+  (15, 'https://jobs.lever.co/cambly/a965ee9f-3a17-4c20-a17b-8b7a0e4be158', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),   
 ]
 
 # status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
