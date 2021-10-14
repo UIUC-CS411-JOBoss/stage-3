@@ -85,6 +85,54 @@ def get_db():
                         database=DB_NAME,
                         cursorclass=pymysql.cursors.DictCursor)
 
+def q(connection):
+    query1 = "SELECT SQL_NO_CACHE company.id, company.name, COUNT(*) AS num_of_offer \
+            FROM JOB_STATUS AS status JOIN JOB AS job ON status.job_id = job.id JOIN COMPANY AS company ON job.company_id = company.id \
+            WHERE status.create_at LIKE '202%' AND status.application_status = 'offered' AND job.type = 'internship' \
+            GROUP BY company.id, company.name \
+            ORDER BY num_of_offer DESC;"
+    query2 = "SELECT SQL_NO_CACHE u.id, u.email \
+                FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
+                WHERE (DATE(js.create_at) = CURDATE() - interval 7 day) AND j.url LIKE '%workday%' \
+                GROUP BY u.id \
+                HAVING COUNT(*) < 5 \
+                ORDER BY u.email ASC LIMIT 20;"
+    explain_1 = "EXPLAIN " + query1
+    explain_2 = "EXPLAIN " + query2
+
+    # QUERY 1
+    with connection.cursor() as cursor:
+        t = time()
+        cursor.execute(query1)
+        result = cursor.fetchall()
+        print("==========QUERY 1============\n\n",)
+        print('time:', time()-t, '\n\n')
+        print('count:', len(result))
+        for i in result:
+            print(i)
+        cursor.execute(explain_1)
+        result = cursor.fetchall()
+        print("=========== EXPLAIN ============\n\n")
+        print(result)
+        print("==========END QUERY 1============\n\n")
+    
+    # QUERY 2
+    with connection.cursor() as cursor:
+        t = time()
+        cursor.execute(query2)
+        result = cursor.fetchall()
+        print("==========QUERY 2============\n\n",)
+        print('time:', time()-t, '\n\n')
+        print('count:', len(result))
+        for i in result:
+            print(i)
+        cursor.execute(explain_2)
+        result = cursor.fetchall()
+        print("=========== EXPLAIN ============\n\n")
+        print(result)
+        print("==========END QUERY 2============\n\n")
+    
+
 connection = get_db()
 
 with connection:
@@ -129,83 +177,46 @@ with connection:
         result = cursor.fetchone()
         print('JOB_STATUS COUNT', result)
     
-    query1 = "SELECT SQL_NO_CACHE company.id, company.name, COUNT(*) AS num_of_offer \
-                FROM JOB_STATUS AS status JOIN JOB AS job ON status.job_id = job.id JOIN COMPANY AS company ON job.company_id = company.id \
-                WHERE status.create_at LIKE '202%' AND status.application_status = 'offered' AND job.type = 'internship' \
-                GROUP BY company.id, company.name \
-                ORDER BY num_of_offer DESC;"
-    query2 = "SELECT SQL_NO_CACHE u.id, u.email \
-                FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
-                WHERE (DATE(js.create_at) = CURDATE() - interval 7 day) AND j.url LIKE '%workday%' \
-                GROUP BY u.id \
-                HAVING COUNT(*) < 5 \
-                ORDER BY u.email ASC LIMIT 20;"
-    explain_1 = "EXPLAIN " + query1
-    explain_2 = "EXPLAIN " + query2
 
-    # QUERY 1
-    with connection.cursor() as cursor:
-        t = time()
-        cursor.execute(query1)
-        result = cursor.fetchall()
-        print("==========QUERY 1============",)
-        print(time()-t, query1)
-        print('#'*50)
-        print(result)
-        cursor.execute(explain_1)
-        result = cursor.fetchall()
-        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
-        print(result)
-        print("==========END QUERY 1============")
-    
-    # QUERY 2
-    with connection.cursor() as cursor:
-        t = time()
-        cursor.execute(query2)
-        result = cursor.fetchall()
-        print("==========QUERY 2============")
-        print(time()-t, query2)
-        print('#'*50)
-        print(result)
-        cursor.execute(explain_2)
-        result = cursor.fetchall()
-        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
-        print(result)
-        print("==========END QUERY 2============")
-      
+    q(connection)
+
     # ADD INDEX
     with connection.cursor() as cursor:
         sql = "CREATE INDEX application_status_index ON JOB_STATUS (application_status, create_at);"
         cursor.execute(sql)
 
-    # QUERY 1
+    print("=======with index 1======\n\n")
+    q(connection)
+
+    # Remove INDEX
     with connection.cursor() as cursor:
-        t = time()
-        cursor.execute(query1)
-        result = cursor.fetchall()
-        print("==========QUERY 1============",)
-        print(time()-t, query1)
-        print('#'*50)
-        print(result)
-        print('#'*50)
-        cursor.execute(explain_1)
-        result = cursor.fetchall()
-        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
-        print(result)
-        print("==========END QUERY 1============")
-    
-    # QUERY 2
+        sql = "DROP INDEX application_status_index on JOB_STATUS;"
+        cursor.execute(sql)
+
+
+    # ADD INDEX
     with connection.cursor() as cursor:
-        t = time()
-        cursor.execute(query2)
-        result = cursor.fetchall()
-        print("==========QUERY 2============")
-        print(time()-t, query2)
-        print('#'*50)
-        print(result)
-        print('#'*50)
-        cursor.execute(explain_2)
-        result = cursor.fetchall()
-        print("$$$$$$$$$$ EXPLAIN $$$$$$$$$$$")
-        print(result)
-        print("==========END QUERY 1============")
+        sql = "CREATE INDEX application_status_index2 ON JOB_STATUS (application_status, create_at);"
+        cursor.execute(sql)
+
+    print("=======with index 2======\n\n")
+    q(connection)
+
+    # Remove INDEX
+    with connection.cursor() as cursor:
+        sql = "DROP INDEX application_status_index2 on JOB_STATUS;"
+        cursor.execute(sql)
+
+
+    # ADD INDEX
+    with connection.cursor() as cursor:
+        sql = "CREATE INDEX application_status_index3 ON JOB_STATUS (application_status, create_at);"
+        cursor.execute(sql)
+
+    print("=======with index 3======\n\n")
+    q(connection)
+
+    # Remove INDEX
+    with connection.cursor() as cursor:
+        sql = "DROP INDEX application_status_index3 on JOB_STATUS;"
+        cursor.execute(sql)
