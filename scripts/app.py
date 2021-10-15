@@ -111,9 +111,9 @@ def q(connection):
         for i in result:
             print(i)
         cursor.execute(explain_1)
-        result = cursor.fetchall()
+        result = cursor.fetchone()
         print("=========== EXPLAIN ============\n\n")
-        print(result)
+        print(result['EXPLAIN'])
         print("==========END QUERY 1============\n\n")
     
     # QUERY 2
@@ -127,9 +127,9 @@ def q(connection):
         for i in result:
             print(i)
         cursor.execute(explain_2)
-        result = cursor.fetchall()
+        result = cursor.fetchone()
         print("=========== EXPLAIN ============\n\n")
-        print(result)
+        print(result['EXPLAIN'])
         print("==========END QUERY 2============\n\n")
     
 
