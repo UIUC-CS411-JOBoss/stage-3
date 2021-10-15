@@ -97,8 +97,8 @@ def q(connection):
                 GROUP BY u.id \
                 HAVING COUNT(*) < 5 \
                 ORDER BY u.email ASC LIMIT 20;"
-    explain_1 = "EXPLAIN " + query1
-    explain_2 = "EXPLAIN " + query2
+    explain_1 = "EXPLAIN ANALYZE " + query1
+    explain_2 = "EXPLAIN ANALYZE " + query2
 
     # QUERY 1
     with connection.cursor() as cursor:
@@ -137,7 +137,9 @@ connection = get_db()
 
 with connection:
     with connection.cursor() as cursor:
-        users = [(fake.email(), '') for _ in range(USER_CNT)]
+        # illinois.edu
+        users = [(fake.free_email(), '') for _ in range(USER_CNT)]
+        users += [(fake.user_name()+'@illinois.edu', '') for _ in range(200)]
         query = "INSERT INTO `USER` (`email`, `token`) VALUES (%s, %s)"
         cursor.executemany(query, users)
     connection.commit()

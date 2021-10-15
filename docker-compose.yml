@@ -2,10 +2,11 @@ version: "3.9"
     
 services:
   db:
-    image: mysql:5.7
+    image: mysql:8
     volumes:
       - db_data:/var/lib/mysql
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: jobossjoboss
       MYSQL_DATABASE: joboss
@@ -24,6 +25,11 @@ services:
       DB_USER: joboss
       DB_PASSWORD: joboss
       DB_NAME: joboss
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 volumes:
   db_data: {}
   scripts: {}
