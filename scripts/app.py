@@ -91,9 +91,11 @@ def q(connection):
             WHERE status.create_at LIKE '202%' AND status.application_status = 'offered' AND job.type = 'internship' \
             GROUP BY company.id, company.name \
             ORDER BY num_of_offer DESC;"
+
+    # uiuc 不活躍使用者 (7 天內 apply status 少於五筆)
     query2 = "SELECT SQL_NO_CACHE u.id, u.email, u.reverse_email \
                 FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
-                WHERE (DATE(js.create_at) = CURDATE() - interval 7 day) AND j.url LIKE '%workday%' \
+                WHERE (DATE(js.create_at) = CURDATE() - interval 7 day) AND u.reverse_email LIKE 'ude.sionilli@%' \
                 GROUP BY u.id \
                 HAVING COUNT(*) < 5 \
                 ORDER BY u.email ASC LIMIT 20;"
@@ -184,7 +186,7 @@ with connection:
 
     # ADD INDEX
     with connection.cursor() as cursor:
-        sql = "CREATE INDEX application_status_index ON JOB_STATUS (application_status, create_at);"
+        sql = "CREATE INDEX application_status_index ON JOB_STATUS (application_status);"
         cursor.execute(sql)
 
     print("=======with index 1======\n\n")
@@ -212,7 +214,7 @@ with connection:
 
     # ADD INDEX
     with connection.cursor() as cursor:
-        sql = "CREATE INDEX application_status_index3 ON JOB_STATUS (application_status, create_at);"
+        sql = "CREATE INDEX user_email_index ON USER (reverse_email);"
         cursor.execute(sql)
 
     print("=======with index 3======\n\n")
@@ -220,5 +222,5 @@ with connection:
 
     # Remove INDEX
     with connection.cursor() as cursor:
-        sql = "DROP INDEX application_status_index3 on JOB_STATUS;"
+        sql = "DROP INDEX user_email_index on USER;"
         cursor.execute(sql)
