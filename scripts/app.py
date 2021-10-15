@@ -91,7 +91,7 @@ def q(connection):
             WHERE status.create_at LIKE '202%' AND status.application_status = 'offered' AND job.type = 'internship' \
             GROUP BY company.id, company.name \
             ORDER BY num_of_offer DESC;"
-    query2 = "SELECT SQL_NO_CACHE u.id, u.email \
+    query2 = "SELECT SQL_NO_CACHE u.id, u.email, u.reverse_email \
                 FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
                 WHERE (DATE(js.create_at) = CURDATE() - interval 7 day) AND j.url LIKE '%workday%' \
                 GROUP BY u.id \
@@ -138,9 +138,9 @@ connection = get_db()
 with connection:
     with connection.cursor() as cursor:
         # illinois.edu
-        users = [(fake.free_email(), '') for _ in range(USER_CNT)]
-        users += [(fake.user_name()+'@illinois.edu', '') for _ in range(200)]
-        query = "INSERT INTO `USER` (`email`, `token`) VALUES (%s, %s)"
+        emails = [fake.free_email() for _ in range(USER_CNT)] + [fake.user_name()+'@illinois.edu' for _ in range(200)]
+        users = [(email, email[::-1], '',) for email in emails]
+        query = "INSERT INTO `USER` (`email`, `reverse_email`, `token`) VALUES (%s, %s, %s)"
         cursor.executemany(query, users)
     connection.commit()
     with connection.cursor() as cursor:
