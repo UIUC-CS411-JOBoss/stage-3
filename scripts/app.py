@@ -140,7 +140,7 @@ connection = get_db()
 with connection:
     with connection.cursor() as cursor:
         # illinois.edu
-        emails = [fake.free_email() for _ in range(USER_CNT)] + [fake.user_name()+'@illinois.edu' for _ in range(200)]
+        emails = [fake.user_name()+'@illinois.edu' for _ in range(200)] + [fake.free_email() for _ in range(USER_CNT)]
         users = [(email, email[::-1], '',) for email in emails]
         query = "INSERT INTO `USER` (`email`, `reverse_email`, `token`) VALUES (%s, %s, %s)"
         cursor.executemany(query, users)
