@@ -90,15 +90,15 @@ def q(connection):
             FROM JOB_STATUS AS status JOIN JOB AS job ON status.job_id = job.id JOIN COMPANY AS company ON job.company_id = company.id \
             WHERE status.create_at LIKE '202%' AND status.application_status = 'offered' AND job.type = 'internship' \
             GROUP BY company.id, company.name \
-            ORDER BY num_of_offer DESC;"
+            ORDER BY num_of_offer DESC LIMIT 15;"
 
     # uiuc 不活躍使用者 (7 天內 apply status 少於五筆)
     query2 = "SELECT SQL_NO_CACHE u.id, u.email, u.reverse_email \
                 FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
-                WHERE (DATE(js.create_at) = CURDATE() - interval 7 day) AND u.reverse_email LIKE 'ude.sionilli@%' \
+                WHERE (DATE(js.create_at) >= CURDATE() - interval 1 week) AND u.reverse_email LIKE 'ude.sionilli@%' \
                 GROUP BY u.id \
                 HAVING COUNT(*) < 5 \
-                ORDER BY u.email ASC LIMIT 20;"
+                ORDER BY u.email ASC LIMIT 15;"
     explain_1 = "EXPLAIN ANALYZE " + query1
     explain_2 = "EXPLAIN ANALYZE " + query2
 
@@ -214,7 +214,7 @@ with connection:
 
     # ADD INDEX
     with connection.cursor() as cursor:
-        sql = "CREATE INDEX user_email_index ON USER (reverse_email);"
+        sql = "CREATE INDEX user_email_index ON USER (email);"
         cursor.execute(sql)
 
     print("=======with index 3======\n\n")
@@ -224,3 +224,19 @@ with connection:
     with connection.cursor() as cursor:
         sql = "DROP INDEX user_email_index on USER;"
         cursor.execute(sql)
+
+
+    # ADD INDEX
+    with connection.cursor() as cursor:
+        sql = "CREATE INDEX r_user_email_index ON USER (reverse_email);"
+        cursor.execute(sql)
+
+    print("=======with index 4======\n\n")
+    q(connection)
+
+    # Remove INDEX
+    with connection.cursor() as cursor:
+        sql = "DROP INDEX r_user_email_index on USER;"
+        cursor.execute(sql)
+
+
