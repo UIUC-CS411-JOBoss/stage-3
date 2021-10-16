@@ -6,6 +6,7 @@ from tenacity import retry, wait_fixed
 import random
 from datetime import datetime, timedelta
 from time import time
+import random
 
 BASE_DATE = datetime(2021, 8, 1)
 
@@ -92,15 +93,23 @@ def q(connection):
             GROUP BY company.id, company.name \
             ORDER BY num_of_offer DESC LIMIT 15;"
 
-    # uiuc 不活躍使用者 (7 天內 apply status 少於五筆)
     query2 = "SELECT SQL_NO_CACHE u.id, u.email, u.reverse_email \
                 FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
                 WHERE (DATE(js.create_at) >= CURDATE() - interval 1 week) AND u.reverse_email LIKE 'ude.sionilli@%' \
                 GROUP BY u.id \
                 HAVING COUNT(*) < 5 \
                 ORDER BY u.email ASC LIMIT 15;"
+
+    # uiuc 不活躍使用者 (7 天內 apply status 少於五筆)
+    query3 = "SELECT SQL_NO_CACHE u.id, u.email, u.reverse_email \
+                FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
+                WHERE (DATE(js.create_at) >= CURDATE() - interval 1 week) AND u.email LIKE '%@illinois.edu' \
+                GROUP BY u.id \
+                HAVING COUNT(*) < 5 \
+                ORDER BY u.email ASC LIMIT 15;"
     explain_1 = "EXPLAIN ANALYZE " + query1
     explain_2 = "EXPLAIN ANALYZE " + query2
+    explain_3 = "EXPLAIN ANALYZE " + query3
 
     # QUERY 1
     with connection.cursor() as cursor:
@@ -133,7 +142,22 @@ def q(connection):
         print("=========== EXPLAIN ============\n\n")
         print(result['EXPLAIN'])
         print("==========END QUERY 2============\n\n")
-    
+
+    # QUERY 3
+    with connection.cursor() as cursor:
+        t = time()
+        cursor.execute(query3)
+        result = cursor.fetchall()
+        print("==========QUERY 3============\n\n",)
+        print('time:', time()-t, '\n\n')
+        print('count:', len(result))
+        for i in result:
+            print(i)
+        cursor.execute(explain_3)
+        result = cursor.fetchone()
+        print("=========== EXPLAIN ============\n\n")
+        print(result['EXPLAIN'])
+        print("==========END QUERY 3============\n\n")   
 
 connection = get_db()
 
@@ -142,6 +166,7 @@ with connection:
         # illinois.edu
         emails = [fake.user_name()+'@illinois.edu' for _ in range(200)] + [fake.free_email() for _ in range(USER_CNT)]
         users = [(email, email[::-1], '',) for email in emails]
+        random.shuffle(users)
         query = "INSERT INTO `USER` (`email`, `reverse_email`, `token`) VALUES (%s, %s, %s)"
         cursor.executemany(query, users)
     connection.commit()
