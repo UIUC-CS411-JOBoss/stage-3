@@ -207,6 +207,19 @@ with connection:
         print('JOB_STATUS COUNT', result)
     
 
+    # ADD INDEX
+    with connection.cursor() as cursor:
+        sql = "CREATE INDEX create_at_index ON JOB_STATUS (create_at);"
+        cursor.execute(sql)
+
+    print("=======with index 0 & 5======\n\n")
+    q(connection)
+
+    # Remove INDEX
+    with connection.cursor() as cursor:
+        sql = "DROP INDEX create_at_index on JOB_STATUS;"
+        cursor.execute(sql)
+
     q(connection)
 
     # ADD INDEX
@@ -263,5 +276,3 @@ with connection:
     with connection.cursor() as cursor:
         sql = "DROP INDEX r_user_email_index on USER;"
         cursor.execute(sql)
-
-
