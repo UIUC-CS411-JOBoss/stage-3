@@ -101,6 +101,7 @@ def q(connection):
                 ORDER BY u.email ASC LIMIT 15;"
 
     # uiuc 不活躍使用者 (7 天內 apply status 少於五筆)
+    # thebjorn. (2015, Aug 14). MYSQL datetime rows from 7 days ago?. Stack Overflow. https://stackoverflow.com/a/32016131
     query3 = "SELECT SQL_NO_CACHE u.id, u.email, u.reverse_email \
                 FROM USER AS u JOIN JOB_STATUS AS js ON u.id = js.user_id JOIN JOB AS j ON j.id = js.job_id \
                 WHERE (DATE(js.create_at) >= CURDATE() - interval 1 week) AND u.email LIKE '%@illinois.edu' \
