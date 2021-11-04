@@ -139,57 +139,7 @@ def q(connection):
         print(result['EXPLAIN'])
         print("==========END QUERY 3============\n\n")   
 
-connection = get_db()
-
-with connection:
-    with connection.cursor() as cursor:
-        # illinois.edu
-        emails = [fake.user_name()+'@illinois.edu' for _ in range(200)] + [fake.free_email() for _ in range(USER_CNT)]
-        users = [(email, email[::-1], '',) for email in emails]
-        random.shuffle(users)
-        query = "INSERT INTO `USER` (`email`, `reverse_email`, `token`) VALUES (%s, %s, %s)"
-        cursor.executemany(query, users)
-    connection.commit()
-    with connection.cursor() as cursor:
-        query = "SELECT COUNT(1) FROM USER;"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        print('USER COUNT', result)
-    with connection.cursor() as cursor:
-        query = "INSERT INTO `COMPANY` (`id`, `name`, `employer_industry_id`, `employer_logo_url`) VALUES (%s, %s, %s, %s)"
-        cursor.executemany(query, company_list)
-    connection.commit()
-    with connection.cursor() as cursor:
-        query = "SELECT COUNT(1) FROM COMPANY;"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        print('COMPANY COUNT', result)
-    with connection.cursor() as cursor:
-        query = "INSERT INTO `JOB` (`id`,`company_id`,`duration`,`job_type_id`,`job_type_name`,`location_cities`,`location_countries`,`location_states`,`location_names`,`salary_type_id`,`salary_type_name`,`text_description`,`title`,`remote`,`cumulative_gpa_required`,`cumulative_gpa`,`located_in_us`,`accepts_opt_cpt_candidates`,`willing_to_sponsor_candidate`,`graduation_date_minimum`,`graduation_date_maximum`,`work_auth_required`,`school_year_or_graduation_date_required`,`us_authorization_optional`,`work_authorization_requirements`,`apply_start`,`updated_at`,`expiration_date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-
-        cursor.executemany(query, job_list)
-    connection.commit()
-    
-    with connection.cursor() as cursor:
-        query = "SELECT COUNT(1) FROM JOB;"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        print('JOB COUNT', result)
-    
-    job_apply_list = []
-    for i in range(1, USER_CNT):
-      job_apply_list += random_apply(i)
-    
-    with connection.cursor() as cursor:
-        query = "INSERT INTO `JOB_STATUS` (`job_id`, `user_id`, `create_at`, `application_status`) VALUES (%s, %s, %s, %s)"
-        cursor.executemany(query, job_apply_list)
-    connection.commit()
-    with connection.cursor() as cursor:
-        query = "SELECT COUNT(1) FROM JOB_STATUS;"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        print('JOB_STATUS COUNT', result)
-    
+def benchmark(connection):
 
     # ADD INDEX
     with connection.cursor() as cursor:
@@ -260,3 +210,56 @@ with connection:
     with connection.cursor() as cursor:
         sql = "DROP INDEX r_user_email_index on USER;"
         cursor.execute(sql)
+
+connection = get_db()
+
+with connection:
+    with connection.cursor() as cursor:
+        # illinois.edu
+        emails = [fake.user_name()+'@illinois.edu' for _ in range(200)] + [fake.free_email() for _ in range(USER_CNT)]
+        users = [(email, email[::-1], '',) for email in emails]
+        random.shuffle(users)
+        query = "INSERT INTO `USER` (`email`, `reverse_email`, `token`) VALUES (%s, %s, %s)"
+        cursor.executemany(query, users)
+    connection.commit()
+    with connection.cursor() as cursor:
+        query = "SELECT COUNT(1) FROM USER;"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        print('USER COUNT', result)
+    with connection.cursor() as cursor:
+        query = "INSERT INTO `COMPANY` (`id`, `name`, `employer_industry_id`, `employer_logo_url`) VALUES (%s, %s, %s, %s)"
+        cursor.executemany(query, company_list)
+    connection.commit()
+    with connection.cursor() as cursor:
+        query = "SELECT COUNT(1) FROM COMPANY;"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        print('COMPANY COUNT', result)
+    with connection.cursor() as cursor:
+        query = "INSERT INTO `JOB` (`id`,`company_id`,`duration`,`job_type_id`,`job_type_name`,`location_cities`,`location_countries`,`location_states`,`location_names`,`salary_type_id`,`salary_type_name`,`text_description`,`title`,`remote`,`cumulative_gpa_required`,`cumulative_gpa`,`located_in_us`,`accepts_opt_cpt_candidates`,`willing_to_sponsor_candidate`,`graduation_date_minimum`,`graduation_date_maximum`,`work_auth_required`,`school_year_or_graduation_date_required`,`us_authorization_optional`,`work_authorization_requirements`,`apply_start`,`updated_at`,`expiration_date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+        cursor.executemany(query, job_list)
+    connection.commit()
+    
+    with connection.cursor() as cursor:
+        query = "SELECT COUNT(1) FROM JOB;"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        print('JOB COUNT', result)
+    
+    job_apply_list = []
+    for i in range(1, USER_CNT):
+      job_apply_list += random_apply(i)
+    
+    with connection.cursor() as cursor:
+        query = "INSERT INTO `JOB_STATUS` (`job_id`, `user_id`, `create_at`, `application_status`) VALUES (%s, %s, %s, %s)"
+        cursor.executemany(query, job_apply_list)
+    connection.commit()
+    with connection.cursor() as cursor:
+        query = "SELECT COUNT(1) FROM JOB_STATUS;"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        print('JOB_STATUS COUNT', result)
+    
+    # benchmark(connection)
