@@ -7,6 +7,7 @@ import random
 from datetime import datetime, timedelta
 from time import time
 import random
+import csv
 
 BASE_DATE = datetime(2021, 8, 1)
 
@@ -37,25 +38,14 @@ company_list = [
   ('Cambly', 'https://jobs.lever.co/cambly/')
 ]
 
-job_list = [
-  # `company_id`, `url`, `archived_url`, `active`, `location`, `type`, `title`, `description`, `accept_opt_cpt`, `visa_sponsorship`
-  (1, "https://www.facebook.com/careers/v2/jobs/946116176191468/", "", True, "", "internship", "Software Engineer, Intern/Co-op", "", "yes", "yes"),
-  (2, "https://jobs.apple.com/en-us/details/200253195/software-engineering-internship?team=STDNT", "", True, "", "internship", "Software Engineering Internship", "", "yes", "yes"),
-  (3, "https://jobs.netflix.com/jobs/119544498", "", True, "", "internship", "Machine Learning Intern", "", "yes", "yes"),
-  (4, "https://careers.microsoft.com/students/us/en/job/1085294/Software-Engineering-Intern-Opportunities", "", True, "", "internship", "Software Engineering: Intern Opportunities", "", "yes", "yes"),
-  (5, "https://careers.google.com/jobs/results/122335392432038598-software-engineering-intern-masters-summer-2022/?employment_type=INTERN", "", True, "", "internship", "Software Engineering Intern, Master's, Summer 2022", "", "yes", "yes"),
-  (6, 'https://boards.greenhouse.io/gusto/jobs/3499036', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),
-  (7, 'https://www.hudsonrivertrading.com/careers/job/?gh_jid=3015374', "", True, "", "internship", "Software Engineering Internship - Summer 2022", "", "yes", "yes"),
-  (8, 'https://boards.greenhouse.io/flexport/jobs/3470041', "", True, "", "internship", "2022 Summer Full-Stack Software Engineering Internship", "", "yes", "yes"),
-  (9, 'https://adobe.wd5.myworkdayjobs.com/en-US/external_university/details/XMLNAME-2022-Intern---Software-Development-Intern_R116000?q=intern', "", True, "", "internship", "2022 Intern - Software Development Intern", "", "yes", "yes"),
-  (10, 'https://jobs.lever.co/bodo/f95f11b7-9089-4072-a217-473ad82b6e8f', "", True, "", "internship", "Software Engineer, Cloud Infrastructure (Intern)", "", "yes", "yes"),
-  (11, 'https://boards.greenhouse.io/gitlab/jobs/5197819002', "", True, "", "internship", "Engineering Internship - register your interest", "", "yes", "yes"),
-  (12, 'https://boards.greenhouse.io/reddit/jobs/3458837', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),
-  (13, 'https://www.linkedin.com/jobs/view/2719073327/', "", True, "", "internship", "Biomedical Data Scientist - Summer 2022 Internship", "", "yes", "yes"),
-  (14, 'https://qumulo.com/company/jobs/?gh_jid=3434199', "", True, "", "internship", "Software Development Engineer (Internship 2022)", "", "yes", "yes"),
-  (15, 'https://jobs.lever.co/cambly/a965ee9f-3a17-4c20-a17b-8b7a0e4be158', "", True, "", "internship", "Software Engineering Intern (Summer 2022)", "", "yes", "yes"),   
-  (15, 'https://jobs.lever.co/cambly/a965ee9f-3a17-4c20-a17b-8b7a0e4be158fake', "", True, "", "internship", "Software Engineering Intern (Winter 2022)", "", "yes", "yes"),   
-]
+print ('[-] loading job csv...')
+with open('jobs.csv', newline='') as f:
+    reader = csv.reader(f)
+    job_list_csv = list(reader)
+    print ('[v] job csv loaded')
+    
+job_list = [[element if element != '' else None for element in line] for line in job_list_csv[1:]] 
+print ('[v] job list loaded')
 
 # status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
 status_1 = ['applied']
@@ -66,11 +56,11 @@ status_5 = ['applied', 'OA', 'behavior interview', 'technical interview', 'offer
 status_6 = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected']
 status_list = [status_1, status_2, status_4, status_5] + [status_3]*1000 + [status_6]*500
 
-job_ids = list(range(1, len(job_list)))
 
 def random_apply(user_id):
   job_status_list = []
-  for job_id in random.sample(job_ids, random.randrange(1, len(job_list))):
+  for job_record in random.sample(job_list, random.randrange(1, 100)):
+    job_id = job_record[0]
     d = BASE_DATE + timedelta(days=random.randint(1, 30))
     for status in random.choice(status_list):
       d = d + timedelta(days=random.randint(1, 15))
@@ -186,13 +176,17 @@ with connection:
         result = cursor.fetchone()
         print('COMPANY COUNT', result)
     with connection.cursor() as cursor:
-        query = "INSERT INTO `JOB` (`company_id`, `url`, `archived_url`, `active`, `location`, `type`, `title`, `description`, `accept_opt_cpt`, `visa_sponsorship`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO `JOB` (`id`,`company_id`,`duration`,`job_type_id`,`job_type_name`,`location_cities`,`location_countries`,`location_states`,`location_names`,`salary_type_id`,`salary_type_name`,`text_description`,`title`,`remote`,`cumulative_gpa_required`,`cumulative_gpa`,`located_in_us`,`accepts_opt_cpt_candidates`,`willing_to_sponsor_candidate`,`graduation_date_minimum`,`graduation_date_maximum`,`work_auth_required`,`school_year_or_graduation_date_required`,`us_authorization_optional`,`work_authorization_requirements`,`apply_start`,`updated_at`,`expiration_date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
         cursor.executemany(query, job_list)
+    connection.commit()
+    
     with connection.cursor() as cursor:
         query = "SELECT COUNT(1) FROM JOB;"
         cursor.execute(query)
         result = cursor.fetchone()
         print('JOB COUNT', result)
+    
     job_apply_list = []
     for i in range(1, USER_CNT):
       job_apply_list += random_apply(i)

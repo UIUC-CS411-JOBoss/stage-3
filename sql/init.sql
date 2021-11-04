@@ -66,30 +66,46 @@ CREATE TABLE `INTEREST` (
 CREATE TABLE `COMPANY` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `name` VARCHAR(250) NOT NULL,
+  `employer_industry_id` VARCHAR(250),
+  `employer_logo_url` VARCHAR(2048),
   `website` VARCHAR(2048) NOT NULL,
   `email` VARCHAR(2048),
   `phone` VARCHAR(20),
   `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
- 
+
 CREATE TABLE `JOB` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `company_id` INT NOT NULL,
-  `url` VARCHAR(2048) NOT NULL,
-  `archived_url` VARCHAR(2048) NOT NULL,
-  `active` Boolean NOT NULL,
-  `location` VARCHAR(250),
-  `type` ENUM ('internship', 'coop', 'full-time') NOT NULL,
-  `title` VARCHAR(2048) NOT NULL,
-  `description` TEXT NOT NULL,
-  `accept_opt_cpt` ENUM ('yes', 'no', 'unknown') NOT NULL,
-  `visa_sponsorship` ENUM ('yes', 'no', 'unknown') NOT NULL,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`company_id`) REFERENCES `COMPANY` (`id`)
+  `duration` VARCHAR(255),
+  `job_type_id` INT,
+  `job_type_name` VARCHAR(255),
+  `location_cities` TEXT,
+  `location_countries` TEXT,
+  `location_states` TEXT,
+  `location_names` TEXT,
+  `salary_type_id` INT,
+  `salary_type_name` VARCHAR(255),
+  `text_description` TEXT,
+  `title` VARCHAR(255),
+  `remote` BOOLEAN,
+  `cumulative_gpa_required` BOOLEAN,
+  `cumulative_gpa` FLOAT,
+  `located_in_us` BOOLEAN,
+  `accepts_opt_cpt_candidates` BOOLEAN,
+  `willing_to_sponsor_candidate` BOOLEAN,
+  `graduation_date_minimum` DATE,
+  `graduation_date_maximum` DATE,
+  `work_auth_required` BOOLEAN,
+  `school_year_or_graduation_date_required` BOOLEAN,
+  `us_authorization_optional` BOOLEAN,
+  `work_authorization_requirements` TEXT,
+  `apply_start` DATETIME,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `expiration_date` DATETIME
 );
- 
+
 CREATE TABLE `JOB_STATUS` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `job_id` int NOT NULL,
