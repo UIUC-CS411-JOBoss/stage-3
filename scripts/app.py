@@ -17,26 +17,15 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
 USER_CNT = 10000
+USER_APPLY_MAX = 100
 
 fake = Faker()
 
-company_list = [
-  ('Facebook', 'https://www.facebook.com/careers/'),
-  ('Apple', 'https://www.apple.com/careers/us/'),
-  ('Netflix', 'https://jobs.netflix.com/jobs/'),
-  ('Microsoft', 'https://careers.microsoft.com/us/en'),
-  ('Google', 'https://careers.google.com/'),
-  ('Gusto', 'https://gusto.com/about/careers'),
-  ('Hudson River Trading', 'https://www.hudsonrivertrading.com/'),
-  ('Flexport', 'https://boards.greenhouse.io/flexport/'),
-  ('Adobe', 'https://adobe.wd5.myworkdayjobs.com/en-US/external_university'),
-  ('Bodo.ai', 'https://jobs.lever.co/bodo/'),
-  ('Gitlab', 'https://boards.greenhouse.io/gitlab'),
-  ('Reddit', 'https://boards.greenhouse.io/reddit'),
-  ('PathAI', 'https://www.linkedin.com/company/pathai/jobs/'),
-  ('Qumulo', 'https://qumulo.com/company/jobs/?gh_jid=3434199'),
-  ('Cambly', 'https://jobs.lever.co/cambly/')
-]
+print ('[-] loading company csv...')
+with open('companies.csv', newline='') as f:
+    reader = csv.reader(f)
+    company_list = list(reader)[1:]
+    print ('[v] company csv loaded')
 
 print ('[-] loading job csv...')
 with open('jobs.csv', newline='') as f:
@@ -59,7 +48,7 @@ status_list = [status_1, status_2, status_4, status_5] + [status_3]*1000 + [stat
 
 def random_apply(user_id):
   job_status_list = []
-  for job_record in random.sample(job_list, random.randrange(1, 100)):
+  for job_record in random.sample(job_list, random.randrange(0, USER_APPLY_MAX)):
     job_id = job_record[0]
     d = BASE_DATE + timedelta(days=random.randint(1, 30))
     for status in random.choice(status_list):
@@ -167,7 +156,7 @@ with connection:
         result = cursor.fetchone()
         print('USER COUNT', result)
     with connection.cursor() as cursor:
-        query = "INSERT INTO `COMPANY` (`name`, `website`) VALUES (%s, %s)"
+        query = "INSERT INTO `COMPANY` (`id`, `name`, `employer_industry_id`, `employer_logo_url`) VALUES (%s, %s, %s, %s)"
         cursor.executemany(query, company_list)
     connection.commit()
     with connection.cursor() as cursor:
