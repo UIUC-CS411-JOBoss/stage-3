@@ -125,3 +125,5 @@ CREATE TABLE `JOB_TAG` (
   FOREIGN KEY (`job_id`) REFERENCES `JOB` (`id`),
   FOREIGN KEY (`tag_id`) REFERENCES `TAG` (`id`)
 );
+
+GRANT ALL PRIVILEGES ON joboss.* TO 'joboss'@'%';
