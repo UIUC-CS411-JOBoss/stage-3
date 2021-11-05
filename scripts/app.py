@@ -16,8 +16,8 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
-USER_CNT = 10000
-USER_APPLY_MAX = 100
+USER_CNT = 1000
+USER_APPLY_MAX = 20
 
 fake = Faker()
 
