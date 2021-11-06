@@ -110,7 +110,9 @@ CREATE TABLE `JOB_STATUS` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `job_id` int NOT NULL,
   `user_id` int NOT NULL,
+  `status_date` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `application_status` ENUM ('applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered') NOT NULL,
   FOREIGN KEY (`job_id`) REFERENCES `JOB` (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`)
