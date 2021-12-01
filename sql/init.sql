@@ -290,3 +290,35 @@ CLOSE cur;
 
 END$$
 DELIMITER ;
+
+
+
+CREATE TRIGGER `trigger JobDescriptionHook` AFTER UPDATE ON `JOB`
+ FOR EACH ROW IF OLD.text_description <> NEW.text_description THEN
+	CALL JobDescriptionHook(NEW.id);
+END IF
+
+
+
+CREATE TRIGGER `update tag when delete` AFTER DELETE ON `JOB_TAG`
+ FOR EACH ROW UPDATE JOB SET tag_list= REPLACE(tag_list, concat(";", (SELECT tag FROM TAG WHERE id = OLD.tag_id LIMIT 1)) ,'') WHERE id=OLD.job_id
+
+
+
+ CREATE TRIGGER `update tag when insert` AFTER INSERT ON `JOB_TAG`
+ FOR EACH ROW UPDATE JOB SET tag_list=concat(tag_list, ";", (SELECT tag FROM TAG WHERE id = NEW.tag_id LIMIT 1)) WHERE id=NEW.job_id
+
+
+
+ CREATE TRIGGER `user action: delete job status` BEFORE DELETE ON `JOB_STATUS`
+ FOR EACH ROW UPDATE USER as u SET u.update_at = CURRENT_TIMESTAMP WHERE u.id = OLD.user_id
+
+
+
+ CREATE TRIGGER `user action: insert job status` BEFORE INSERT ON `JOB_STATUS`
+ FOR EACH ROW UPDATE USER as u SET u.update_at = CURRENT_TIMESTAMP WHERE u.id = NEW.user_id
+
+
+
+ CREATE TRIGGER `user action: update job status` BEFORE UPDATE ON `JOB_STATUS`
+ FOR EACH ROW UPDATE USER as u SET u.update_at = CURRENT_TIMESTAMP WHERE u.id = NEW.user_id
