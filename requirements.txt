@@ -1,3 +1,7 @@
 Faker
 PyMySQL
 tenacity
+gensim
+pandas
+rank_bm25
+numpy

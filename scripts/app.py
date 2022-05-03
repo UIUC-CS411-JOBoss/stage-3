@@ -8,6 +8,11 @@ from datetime import datetime, timedelta
 from time import time
 import random
 import csv
+import gensim
+import pandas as pd
+import numpy as np
+from gensim.utils import simple_preprocess, tokenize
+from gensim import corpora, models, similarities
 
 BASE_DATE = datetime(2021, 8, 1)
 
@@ -261,9 +266,41 @@ def benchmark(connection):
         sql = "DROP INDEX r_user_email_index on USER;"
         cursor.execute(sql)
 
+def train_related_jobs():
+    fn = "jobs-2022-04-01.csv"
+    df = pd.read_csv(fn)
+    df = df[['id', 'title', 'text_description']]
+    df['text_description_tokenized'] = df['text_description'].apply(lambda x: simple_preprocess(x))
+    dic = corpora.Dictionary(df['text_description_tokenized'])
+    df['corpus'] = df['text_description_tokenized'].apply(lambda x: dic.doc2bow(x))
+    lsi = models.LsiModel(df['corpus'], id2word=dic, num_topics=350)
+    index = similarities.Similarity('index', lsi[df['corpus']], num_features=lsi.num_topics)
+
+    top_k = 5
+    related_jobs = []
+    for l, degrees in enumerate(index):
+        cur_job_id = df.at[l, 'id']
+        related_job_ids = df.iloc[np.argpartition(degrees, -top_k)[-top_k-1:-1]]['id'].values
+        for related_job_id in related_job_ids:
+            related_jobs.append((cur_job_id, related_job_id))
+    return related_jobs
+
+
+def insert_related_job(connection):
+    related_jobs = train_related_jobs()
+    with connection.cursor() as cursor:
+        query = "INSERT INTO `RELATED_JOB` (`job_id`, `related_job_id`) VALUES (%s, %s)"
+        cursor.executemany(query, related_jobs)
+    connection.commit()
+    with connection.cursor() as cursor:
+        query = "SELECT COUNT(1) FROM RELATED_JOB GROUP BY job_id;"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        print('RELATED_JOB COUNT', result)
 connection = get_db()
 
 with connection:
     insert_data(connection)
+    insert_related_job(connection)
     print('success')
     #benchmark(connection)

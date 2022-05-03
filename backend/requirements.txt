@@ -1,0 +1,7 @@
+gensim
+pandas
+rank_bm25
+numpy
+fastapi
+pydantic
+uvicorn

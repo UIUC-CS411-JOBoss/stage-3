@@ -28,6 +28,15 @@ services:
       DB_USER: joboss
       DB_PASSWORD: dqQtJhKvqPg4zNWy
       DB_NAME: joboss
+  backend:
+    depends_on:
+      - scripts
+    build: ./backend
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - backend:/backend
   adminer:
     image: adminer
     restart: always
@@ -48,3 +57,4 @@ services:
 volumes:
   db_data: {}
   scripts: {}
+  backend: {}
