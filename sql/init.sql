@@ -9,124 +9,137 @@ DROP TABLE IF EXISTS `JOB_STATUS`;
 DROP TABLE IF EXISTS `JOB_TAG`;
 
 
-CREATE TABLE `USER` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `email` VARCHAR(250) NOT NULL,
-  `reverse_email` VARCHAR(250) NOT NULL,
-  `token` VARCHAR(250) NOT NULL ,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
- 
-CREATE TABLE `USER_PROFILE` (
-  `user_id` INT PRIMARY KEY,
-  `first_name` VARCHAR(250) NOT NULL,
-  `last_name` VARCHAR(250) NOT NULL,
-  `prefered_first_name` VARCHAR(250),
-  `introduction` VARCHAR(2000),
-  `email` VARCHAR(250),
-  `phone` VARCHAR(20),
-  `address` VARCHAR(250),
-  `social_website` VARCHAR(250),
-  `work_experiences` JSON,
-  `resume` VARCHAR(2083),
-  `cover_letter` VARCHAR(2083),
-  `visa_required` bool,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`)
-);
+CREATE TABLE IF NOT EXISTS `COMPANY` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `employer_industry_id` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `employer_logo_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `website` varchar(2048) DEFAULT NULL,
+  `email` varchar(2048) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `TAG` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `tag` VARCHAR(250) NOT NULL,
-  `tag_type` ENUM ('skills', 'interview', 'others') NOT NULL,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE IF NOT EXISTS `JOB` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `company_id` int NOT NULL,
+  `duration` varchar(255) DEFAULT NULL,
+  `job_type_id` int DEFAULT NULL,
+  `job_type_name` varchar(255) DEFAULT NULL,
+  `location_cities` text,
+  `location_countries` text,
+  `location_states` text,
+  `location_names` text,
+  `salary_type_id` int DEFAULT NULL,
+  `salary_type_name` varchar(255) DEFAULT NULL,
+  `text_description` text,
+  `title` varchar(255) DEFAULT NULL,
+  `remote` tinyint(1) DEFAULT NULL,
+  `cumulative_gpa_required` tinyint(1) DEFAULT NULL,
+  `cumulative_gpa` float DEFAULT NULL,
+  `located_in_us` tinyint(1) DEFAULT NULL,
+  `accepts_opt_cpt_candidates` tinyint(1) DEFAULT NULL,
+  `willing_to_sponsor_candidate` tinyint(1) DEFAULT NULL,
+  `graduation_date_minimum` date DEFAULT NULL,
+  `graduation_date_maximum` date DEFAULT NULL,
+  `work_auth_required` tinyint(1) DEFAULT NULL,
+  `school_year_or_graduation_date_required` tinyint(1) DEFAULT NULL,
+  `us_authorization_optional` tinyint(1) DEFAULT NULL,
+  `work_authorization_requirements` text,
+  `apply_start` datetime DEFAULT NULL,
+  `tag_list` text DEFAULT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `expiration_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `company_id` (`company_id`),
+  KEY `job_type_name` (`job_type_name`),
+  KEY `salary_type_name` (`salary_type_name`),
+  KEY `title` (`title`),
+  KEY `remote` (`remote`),
+  KEY `accepts_opt_cpt_candidates` (`accepts_opt_cpt_candidates`),
+  KEY `willing_to_sponsor_candidate` (`willing_to_sponsor_candidate`),
+  KEY `work_auth_required` (`work_auth_required`),
+  KEY `apply_start` (`apply_start`),
+  KEY `expiration_date` (`expiration_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `USER_PREFERRED_TAG` (
-  `user_id` INT NOT NULL,
-  `tag_id` INT NOT NULL,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`user_id`, `tag_id`),
-  FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`),
-  FOREIGN KEY (`tag_id`) REFERENCES `TAG` (`id`)
-);
- 
-CREATE TABLE `INTEREST` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `user_id` INT NOT NULL,
-  `interest` ENUM ('front-end', 'back-end', 'full-stack', 'machine-learning', 'data-science', 'mobile-app') NOT NULL,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`)
-);
- 
-CREATE TABLE `COMPANY` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `name` VARCHAR(250) NOT NULL,
-  `employer_industry_id` VARCHAR(250),
-  `employer_logo_url` TEXT,
-  `website` VARCHAR(2048),
-  `email` VARCHAR(2048),
-  `phone` VARCHAR(20),
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE `JOB` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `company_id` INT NOT NULL,
-  `duration` VARCHAR(255),
-  `job_type_id` INT,
-  `job_type_name` VARCHAR(255),
-  `location_cities` TEXT,
-  `location_countries` TEXT,
-  `location_states` TEXT,
-  `location_names` TEXT,
-  `salary_type_id` INT,
-  `salary_type_name` VARCHAR(255),
-  `text_description` TEXT,
-  `title` VARCHAR(255),
-  `remote` BOOLEAN,
-  `cumulative_gpa_required` BOOLEAN,
-  `cumulative_gpa` FLOAT,
-  `located_in_us` BOOLEAN,
-  `accepts_opt_cpt_candidates` BOOLEAN,
-  `willing_to_sponsor_candidate` BOOLEAN,
-  `graduation_date_minimum` DATE,
-  `graduation_date_maximum` DATE,
-  `work_auth_required` BOOLEAN,
-  `school_year_or_graduation_date_required` BOOLEAN,
-  `us_authorization_optional` BOOLEAN,
-  `work_authorization_requirements` TEXT,
-  `apply_start` DATETIME,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `expiration_date` DATETIME
-);
-
-CREATE TABLE `JOB_STATUS` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `JOB_STATUS` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `job_id` int NOT NULL,
   `user_id` int NOT NULL,
-  `status_date` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `application_status` ENUM ('applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered') NOT NULL,
-  FOREIGN KEY (`job_id`) REFERENCES `JOB` (`id`),
-  FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`)
-);
- 
-CREATE TABLE `JOB_TAG` (
-  `job_id` INT NOT NULL,
-  `tag_id` INT NOT NULL,
-  `create_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` Datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`job_id`, `tag_id`),
-  FOREIGN KEY (`job_id`) REFERENCES `JOB` (`id`),
-  FOREIGN KEY (`tag_id`) REFERENCES `TAG` (`id`)
-);
+  `status_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `application_status` enum('applied','OA','behavior interview','technical interview','rejected','offered') NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `job_id` (`job_id`),
+  KEY `user_id` (`user_id`),
+  KEY `application_status` (`application_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `JOB_TAG_LIST` (
+  `job_id` int NOT NULL,
+  `tag_list` varchar(1024) NOT NULL,
+  PRIMARY KEY (`job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `RECOMMEND_HISTORY` (
+  `job_id` int NOT NULL,
+  `recommend_count` int NOT NULL,
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `job_id` (`job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `TAG` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tag` varchar(250) NOT NULL,
+  `tag_type` enum('skills','interview','others') NOT NULL,
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tag` (`tag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `USER` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(250) NOT NULL,
+  `reverse_email` varchar(250) NOT NULL,
+  `token` varchar(250) NOT NULL,
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `USER_PREFERRED_TAG` (
+  `user_id` int NOT NULL,
+  `tag_id` int NOT NULL,
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`,`tag_id`),
+  KEY `tag_id` (`tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+ALTER TABLE `JOB` ADD FULLTEXT KEY `text_description` (`text_description`);
+
+ALTER TABLE `COMPANY`
+  ADD CONSTRAINT `COMPANY_ibfk_1` FOREIGN KEY (`id`) REFERENCES `JOB` (`company_id`);
+
+ALTER TABLE `JOB_STATUS`
+  ADD CONSTRAINT `JOB_STATUS_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `JOB` (`id`),
+  ADD CONSTRAINT `JOB_STATUS_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`);
+
+ALTER TABLE `JOB_TAG_LIST`
+  ADD CONSTRAINT `JOB_TAG_LIST_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `JOB` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `RECOMMEND_HISTORY`
+  ADD CONSTRAINT `RECOMMEND_HISTORY_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `JOB` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `USER_PREFERRED_TAG`
+  ADD CONSTRAINT `USER_PREFERRED_TAG_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `USER` (`id`),
+  ADD CONSTRAINT `USER_PREFERRED_TAG_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `TAG` (`id`);
 
 GRANT ALL PRIVILEGES ON joboss.* TO 'joboss'@'%';
 

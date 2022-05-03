@@ -22,13 +22,13 @@ USER_APPLY_MAX = 20
 fake = Faker()
 
 print ('[-] loading company csv...')
-with open('companies.csv', newline='') as f:
+with open('companies-2022-04-01.csv', newline='') as f:
     reader = csv.reader(f)
     company_list = list(reader)[1:]
     print ('[v] company csv loaded')
 
 print ('[-] loading job csv...')
-with open('jobs.csv', newline='') as f:
+with open('jobs-2022-04-01.csv', newline='') as f:
     reader = csv.reader(f)
     job_list_csv = list(reader)
     print ('[v] job csv loaded')
@@ -79,8 +79,14 @@ def insert_data(connection):
         cursor.execute(query)
         result = cursor.fetchone()
         print('USER COUNT', result)
+    
     with connection.cursor() as cursor:
-        query = "INSERT INTO `COMPANY` (`id`, `name`, `employer_industry_id`, `employer_logo_url`) VALUES (%s, %s, %s, %s)"
+        query = "INSERT INTO `JOB` (`id`,`company_id`,`duration`,`job_type_id`,`job_type_name`,`location_cities`,`location_countries`,`location_states`,`location_names`,`salary_type_id`,`salary_type_name`,`text_description`,`title`,`remote`,`cumulative_gpa_required`,`cumulative_gpa`,`located_in_us`,`accepts_opt_cpt_candidates`,`willing_to_sponsor_candidate`,`graduation_date_minimum`,`graduation_date_maximum`,`work_auth_required`,`school_year_or_graduation_date_required`,`us_authorization_optional`,`work_authorization_requirements`,`apply_start`,`updated_at`,`expiration_date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+        cursor.executemany(query, job_list)
+    connection.commit()
+    with connection.cursor() as cursor:
+        query = "INSERT INTO `COMPANY` (`id`, `employer_industry_id`, `employer_logo_url`, `name`) VALUES (%s, %s, %s, %s)"
         cursor.executemany(query, company_list)
     connection.commit()
     with connection.cursor() as cursor:
@@ -88,12 +94,7 @@ def insert_data(connection):
         cursor.execute(query)
         result = cursor.fetchone()
         print('COMPANY COUNT', result)
-    with connection.cursor() as cursor:
-        query = "INSERT INTO `JOB` (`id`,`company_id`,`duration`,`job_type_id`,`job_type_name`,`location_cities`,`location_countries`,`location_states`,`location_names`,`salary_type_id`,`salary_type_name`,`text_description`,`title`,`remote`,`cumulative_gpa_required`,`cumulative_gpa`,`located_in_us`,`accepts_opt_cpt_candidates`,`willing_to_sponsor_candidate`,`graduation_date_minimum`,`graduation_date_maximum`,`work_auth_required`,`school_year_or_graduation_date_required`,`us_authorization_optional`,`work_authorization_requirements`,`apply_start`,`updated_at`,`expiration_date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-        cursor.executemany(query, job_list)
-    connection.commit()
-    
     with connection.cursor() as cursor:
         query = "SELECT COUNT(1) FROM JOB;"
         cursor.execute(query)
@@ -264,4 +265,5 @@ connection = get_db()
 
 with connection:
     insert_data(connection)
-    benchmark(connection)
+    print('success')
+    #benchmark(connection)
