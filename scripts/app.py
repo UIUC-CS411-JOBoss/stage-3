@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 from gensim.utils import simple_preprocess, tokenize
 from gensim import corpora, models, similarities
+import jsonpickle
 
 BASE_DATE = datetime(2021, 8, 1)
 
@@ -37,8 +38,33 @@ with open('jobs-2022-04-01.csv', newline='') as f:
     reader = csv.reader(f)
     job_list_csv = list(reader)
     print ('[v] job csv loaded')
+
+
+print ('[-] loading tags json...')
+with open('tags.json', newline='') as f:
+    tags = jsonpickle.decode(f.read())
+    
+    tags_id_map = dict()
+    id_counter = 0
+    for tag in tags:
+        tags_id_map[tag] = id_counter
+        id_counter += 1
+    print ('[v] tags json loaded')
+
+print ('[-] loading job_topic_map json...')
+with open('job_topic_map.json', newline='') as f:
+    job_topic_map = jsonpickle.decode(f.read())
+    print ('[v] job_topic_map json loaded')
     
 job_list = [[element if element != '' else None for element in line] for line in job_list_csv[1:]] 
+
+# extend job_list, add job topic (tag list)
+for job in job_list:
+    if job_topic_map[job[0]]:
+        tag_list_str = ";".join(list(job_topic_map[job[0]]))
+        job.append(tag_list_str)
+    else:
+        job.append(None)
 print ('[v] job list loaded')
 
 # status = ['applied', 'OA', 'behavior interview', 'technical interview', 'rejected', 'offered']
@@ -86,7 +112,7 @@ def insert_data(connection):
         print('USER COUNT', result)
     
     with connection.cursor() as cursor:
-        query = "INSERT INTO `JOB` (`id`,`company_id`,`duration`,`job_type_id`,`job_type_name`,`location_cities`,`location_countries`,`location_states`,`location_names`,`salary_type_id`,`salary_type_name`,`text_description`,`title`,`remote`,`cumulative_gpa_required`,`cumulative_gpa`,`located_in_us`,`accepts_opt_cpt_candidates`,`willing_to_sponsor_candidate`,`graduation_date_minimum`,`graduation_date_maximum`,`work_auth_required`,`school_year_or_graduation_date_required`,`us_authorization_optional`,`work_authorization_requirements`,`apply_start`,`updated_at`,`expiration_date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO `JOB` (`id`,`company_id`,`duration`,`job_type_id`,`job_type_name`,`location_cities`,`location_countries`,`location_states`,`location_names`,`salary_type_id`,`salary_type_name`,`text_description`,`title`,`remote`,`cumulative_gpa_required`,`cumulative_gpa`,`located_in_us`,`accepts_opt_cpt_candidates`,`willing_to_sponsor_candidate`,`graduation_date_minimum`,`graduation_date_maximum`,`work_auth_required`,`school_year_or_graduation_date_required`,`us_authorization_optional`,`work_authorization_requirements`,`apply_start`,`updated_at`,`expiration_date`, `tag_list`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
         cursor.executemany(query, job_list)
     connection.commit()
@@ -119,6 +145,19 @@ def insert_data(connection):
         cursor.execute(query)
         result = cursor.fetchone()
         print('JOB_STATUS COUNT', result)
+        
+    # with connection.cursor() as cursor:
+    #     global tags_id_map
+    #     query = "INSERT INTO `TAG` (`id`, `tag`, `tag_type`) VALUES (%s, %s, 'others')"
+    #     tags_data = [(id, tag) for id, tag in tags_id_map.items()]
+    #     cursor.executemany(query, tags_data)
+    # connection.commit()
+    
+    # with connection.cursor() as cursor:
+    #     query = "SELECT COUNT(1) FROM TAG;"
+    #     cursor.execute(query)
+    #     result = cursor.fetchone()
+    #     print('TAG COUNT', result)
 
 def q(connection):
     query1 = "SELECT SQL_NO_CACHE company.id, company.name, COUNT(*) AS num_of_offer \

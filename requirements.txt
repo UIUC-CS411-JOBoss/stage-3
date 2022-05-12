@@ -5,3 +5,4 @@ gensim
 pandas
 rank_bm25
 numpy
+jsonpickle
