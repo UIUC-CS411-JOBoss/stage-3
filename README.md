@@ -1,5 +1,10 @@
 # stage-3
 
+## Prerequisite
+
+- docker
+- docker-compose
+
 ## Get started
 Start the database:
 ```
